@@ -1020,9 +1020,30 @@ class PomodoroEndDialog extends ModalDialog {
         hbox.add_actor(this._separatorLabel);
         hbox.add_actor(this._secondsLabel);
 
+        /**
+         * @author Nihta
+         */
+        this.quotes = [
+            "Take a break, look at something far away",
+            "Take a break, look at something close",
+            "Take a break, blink",
+            "Take a break, close your eyes"
+        ];
+        try {
+            const content = String(GLib.file_get_contents(GLib.get_home_dir() + "/Documents/pomodoro-quotes.txt")[1]);
+            if (content) {
+                this.quotes = content.split('\n').filter(function (el) {
+                    return el !== '';
+                });
+            }
+        } catch (error) {
+            // Do nothing
+        }
+        const randomQuote =  this.quotes[Math.floor(Math.random() *  this.quotes.length)];
+        
         this._descriptionLabel = new St.Label({
             style_class: 'extension-pomodoro-dialog-description',
-            text: _("It's time to take a break"),
+            text: randomQuote,
             x_align: Clutter.ActorAlign.CENTER,
         });
         this._descriptionLabel.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
@@ -1056,6 +1077,7 @@ class PomodoroEndDialog extends ModalDialog {
 
     _updateLabels() {
         if (this._destroyed) {
+            this._descriptionLabel.clutter_text.set_text("");
             return;
         }
 
@@ -1070,6 +1092,14 @@ class PomodoroEndDialog extends ModalDialog {
         if (this._secondsLabel.clutter_text) {
             this._secondsLabel.clutter_text.set_text('%02d'.format(seconds));
         }
+    }
+
+    /**
+     * @author Nihta
+     */
+    _randomQuote() {
+        const randomQuote =  this.quotes[Math.floor(Math.random() *  this.quotes.length)];
+        this._descriptionLabel.clutter_text.set_text(randomQuote);
     }
 
     _onTimerUpdate() {
@@ -1089,6 +1119,8 @@ class PomodoroEndDialog extends ModalDialog {
         }
 
         this._updateLabels();
+
+        this._randomQuote();
 
         super.vfunc_map();
     }

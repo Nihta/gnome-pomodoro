@@ -109,7 +109,9 @@
 .extension-pomodoro-dialog .extension-pomodoro-dialog-box {
     spacing: 5px;
     padding-bottom: 15px;
-    width: 250pt;
+    /* width: 250pt; */
+    padding-left: 80pt;
+    padding-right: 80pt;
 }
 
 .extension-pomodoro-dialog .extension-pomodoro-dialog-timer {
@@ -130,4 +132,6 @@
     font-size: 13pt;
     font-weight: normal;
     color: white;
+    text-align: center;
+    padding-top: 20pt;
 }
