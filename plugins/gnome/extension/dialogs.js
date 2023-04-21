@@ -997,9 +997,31 @@ class PomodoroEndDialog extends ModalDialog {
         this._timerLabel = new Timer.TimerLabel(timer, {
             x_align: Clutter.ActorAlign.CENTER,
         });
+
+        /**
+         * @author Nihta
+         */
+        this.quotes = [
+            "Take a break, look at something far away",
+            "Take a break, look at something close",
+            "Take a break, blink",
+            "Take a break, close your eyes"
+        ];
+        try {
+            const content = String(GLib.file_get_contents(GLib.get_home_dir() + "/Documents/pomodoro-quotes.txt")[1]);
+            if (content) {
+                this.quotes = content.split('\n').filter(function (el) {
+                    return el !== '';
+                });
+            }
+        } catch (error) {
+            // Do nothing
+        }
+        const randomQuote =  this.quotes[Math.floor(Math.random() *  this.quotes.length)];
+
         this._descriptionLabel = new St.Label({
             style_class: 'extension-pomodoro-dialog-description',
-            text: _("It's time to take a break"),
+            text: randomQuote,
             x_align: Clutter.ActorAlign.CENTER,
         });
         this._descriptionLabel.clutter_text.ellipsize = Pango.EllipsizeMode.NONE;
@@ -1028,10 +1050,19 @@ class PomodoroEndDialog extends ModalDialog {
         this._descriptionLabel.clutter_text.set_text(value);
     }
 
+    /**
+     * @author Nihta
+     */
+    _randomQuote() {
+        const randomQuote =  this.quotes[Math.floor(Math.random() *  this.quotes.length)];
+        this._descriptionLabel.clutter_text.set_text(randomQuote);
+    }
+
     _onTimerStateChanged() {
         const timerState = this._timer.getState();
 
         if (timerState === Timer.State.SHORT_BREAK || timerState === Timer.State.LONG_BREAK) {
+            this._randomQuote();
             this._timerLabel.freeze();
         }
     }
